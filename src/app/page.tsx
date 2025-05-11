@@ -4,6 +4,10 @@ import { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import soldaduraImage from './soldadura.jpg';
+// Tipos globales
+type TabType = "introduccion" | "reacciones" | "materiales" | "simulador";
+type MaterialType = "acero" | "aluminio" | "cobre";
+type GasType = "CO2" | "argon" | "mezcla" | "ninguno";
 
 type Reaction = {
     id: number;
@@ -25,9 +29,7 @@ type Result = {
 };
 
 export default function Home() {
-    const [activeTab, setActiveTab] = useState<
-        "introduccion" | "reacciones" | "materiales" | "simulador"
-    >("introduccion");
+    const [activeTab, setActiveTab] = useState<TabType>("introduccion");
 
     return (
         <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -44,30 +46,26 @@ export default function Home() {
                 <h1 className="text-3xl font-extrabold tracking-tight">
                     Química en los Procesos de Soldadura
                 </h1>
-                <p className="text-md text-purple-300 mt-2">
-                    <strong>Aplicación práctica</strong>{" "}
-                    de conceptos químicos en soldadura industrial
-                </p>
             </header>
 
             <nav className="bg-gray-900 shadow-lg mx-4 mt-6 rounded-xl border border-gray-800">
                 <div className="flex overflow-x-auto p-1">
-                    {[
-                        ["introduccion", "Introducción"],
-                        ["reacciones", "Reacciones"],
-                        ["materiales", "Materiales"],
-                        ["simulador", "Simulador"],
-                    ].map(([tab, name]) => (
+                    {([
+                        "introduccion",
+                        "reacciones",
+                        "materiales",
+                        "simulador",
+                    ] as TabType[]).map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab as any)}
+                            onClick={() => setActiveTab(tab)}
                             className={`px-6 py-3 font-bold rounded-lg mx-1 transition-all ${
                                 activeTab === tab
-                                    ? "bg-purple-800 text-white shadow-purple-sm"
+                                    ? "bg-purple-700 text-white shadow-purple-sm"
                                     : "text-gray-300 hover:bg-gray-800 hover:text-purple-300"
                             }`}
                         >
-                            {name}
+                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
                         </button>
                     ))}
                 </div>
@@ -101,12 +99,13 @@ function Introduccion() {
             </h2>
             <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-lg border border-purple-900/30">
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
                     <Image
-                        src = {soldaduraImage}
+                        src={soldaduraImage}
                         alt="Proceso de soldadura"
-                        layout="fill"
-                        objectFit="cover"
-                        className="opacity-90"
+                        fill
+                        className="object-cover opacity-90"
+                        priority
                     />
                 </div>
                 <div>
@@ -308,12 +307,8 @@ function Materiales() {
 
 function Simulador() {
     const [temperature, setTemperature] = useState<number>(1500);
-    const [material, setMaterial] = useState<"acero" | "aluminio" | "cobre">(
-        "acero",
-    );
-    const [gas, setGas] = useState<"CO2" | "argon" | "mezcla" | "ninguno">(
-        "CO2",
-    );
+    const [material, setMaterial] = useState<MaterialType>("acero");
+    const [gas, setGas] = useState<GasType>("CO2");
     const [result, setResult] = useState<Result | null>(null);
 
     const handleSimulate = () => {
@@ -436,15 +431,14 @@ function Simulador() {
                                     Material:
                                 </label>
                                 <div className="grid grid-cols-3 gap-2">
-                                    {[
+                                    {([
                                         ["acero", "Acero"],
                                         ["aluminio", "Aluminio"],
                                         ["cobre", "Cobre"],
-                                    ].map(([value, label]) => (
+                                    ] as const).map(([value, label]) => (
                                         <button
                                             key={value}
-                                            onClick={() =>
-                                                setMaterial(value as any)}
+                                            onClick={() => setMaterial(value)}
                                             className={`py-2 rounded-lg transition-all ${
                                                 material === value
                                                     ? "bg-purple-700 text-white shadow-md"
@@ -462,15 +456,15 @@ function Simulador() {
                                     Gas protector:
                                 </label>
                                 <div className="grid grid-cols-2 gap-2">
-                                    {[
+                                    {([
                                         ["CO2", "CO₂"],
                                         ["argon", "Argón"],
                                         ["mezcla", "Mezcla"],
                                         ["ninguno", "Ninguno"],
-                                    ].map(([value, label]) => (
+                                    ] as const).map(([value, label]) => (
                                         <button
                                             key={value}
-                                            onClick={() => setGas(value as any)}
+                                            onClick={() => setGas(value)}
                                             className={`py-2 rounded-lg transition-all ${
                                                 gas === value
                                                     ? "bg-purple-700 text-white shadow-md"
@@ -581,8 +575,8 @@ function Simulador() {
                                     resultados
                                 </p>
                                 <p className="text-purple-300 text-sm">
-                                    Ajusta los parámetros y haz clic en "SIMULAR
-                                    SOLDADURA"
+                                    Ajusta los parámetros y haz clic en SIMULAR
+                                    SOLDADURA
                                 </p>
                             </div>
                         )}
